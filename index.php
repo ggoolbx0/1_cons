@@ -427,7 +427,7 @@ header('Content-Type: text/html; charset=utf-8');
             </div>
             <div class="form-group">
                 <label for="vinInput">أدخل رقم VIN (17 خانة):</label>
-                <input type="text" id="vinInput" placeholder="مثال: WBADT43452G073980" maxlength="17">
+                <input type="text" id="vinInput" placeholder="مثال: WBADT43452G073980" maxlength="25" inputmode="latin" autocomplete="off">
             </div>
             <button class="btn btn-primary" onclick="checkVehicle()">
                 <i class="bi bi-search"></i>
@@ -679,7 +679,7 @@ header('Content-Type: text/html; charset=utf-8');
             { ar:["عمود كردان","عامود كردان"], en:"drive shaft" },
             { ar:["صدام امامي","صدام أمامي"], en:"front bumper" },
             { ar:["صدام خلفي"], en:"rear bumper" },
-            { ar:["شبك امامي","شبك أمامي","شبك"], en:"front grille" },
+            { ar:["شب�� امامي","شبك أمامي","شبك"], en:"front grille" },
             { ar:["كبوت","غطاء مكينة"], en:"hood" },
             { ar:["رفرف امامي يمين"], en:"front right fender" },
             { ar:["رفرف امامي يسار"], en:"front left fender" },
@@ -694,7 +694,7 @@ header('Content-Type: text/html; charset=utf-8');
             { ar:["غطاء تانكي","غطاء بنزين"], en:"fuel door" },
             { ar:["رفرف داخلي","بطانة رفرف"], en:"fender liner" },
             { ar:["حامل صدام","دعامة صدام"], en:"bumper reinforcement" },
-            { ar:["شمعة ��مامية يمين","شمعه اماميه يمين","نور امامي يمين"], en:"right headlight" },
+            { ar:["شمعة امامية يمين","شمعة أمامية يمين","شمعه اماميه يمين","نور امامي يمين"], en:"right headlight" },
             { ar:["شمعة امامية يسار","شمعه اماميه يسار","نور امامي يسار"], en:"left headlight" },
             { ar:["اسطب خلفي يمين","اصطب خلفي يمين"], en:"right tail light" },
             { ar:["اسطب خلفي يسار","اصطب خلفي يسار"], en:"left tail light" },
@@ -800,7 +800,7 @@ header('Content-Type: text/html; charset=utf-8');
 
         // Clean VIN input
         function cleanVIN(vin) {
-            return vin.replace(/\s/g, '').toUpperCase();
+            return String(vin || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
         }
 
         // Validate VIN
@@ -922,15 +922,21 @@ header('Content-Type: text/html; charset=utf-8');
         // Search for part in dictionary
         function searchPart(arabicName) {
             const normalized = normalizeArabic(arabicName);
-            
+
             for (let part of PARTS_MAP) {
                 for (let arName of part.ar) {
-                    if (normalizeArabic(arName) === normalized) {
+                    const normalizedPart = normalizeArabic(arName);
+
+                    if (
+                        normalizedPart === normalized ||
+                        normalized.includes(normalizedPart) ||
+                        normalizedPart.includes(normalized)
+                    ) {
                         return part.en;
                     }
                 }
             }
-            
+
             return null;
         }
 
