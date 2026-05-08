@@ -171,12 +171,20 @@ header('Content-Type: text/html; charset=utf-8');
             justify-content: center;
             gap: 8px;
             white-space: nowrap;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .btn-search:hover {
             background: var(--primary-color);
             color: white;
             transform: translateY(-2px);
+        }
+
+        .btn-search:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .vehicle-info {
@@ -330,6 +338,35 @@ header('Content-Type: text/html; charset=utf-8');
             padding-left: 10px;
         }
 
+        .search-buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-search-small {
+            background: var(--tertiary-color);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 10px 12px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .btn-search-small:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
         footer {
             position: fixed;
             bottom: 0;
@@ -342,25 +379,6 @@ header('Content-Type: text/html; charset=utf-8');
             font-size: 12px;
             color: var(--text-light);
             box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
-        }
-
-        .btn-reset {
-            background: #404040;
-            color: var(--text-light);
-            border: 2px solid #505050;
-        }
-
-        .btn-reset:hover {
-            background: #505050;
-            color: white;
-        }
-
-        .result-section {
-            display: none;
-        }
-
-        .result-section.active {
-            display: block;
         }
 
         @media (max-width: 576px) {
@@ -381,6 +399,10 @@ header('Content-Type: text/html; charset=utf-8');
             .info-row {
                 font-size: 14px;
                 margin-bottom: 10px;
+            }
+
+            .search-buttons-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -469,25 +491,57 @@ header('Content-Type: text/html; charset=utf-8');
             </button>
 
             <div class="btn-group-search">
-                <button class="btn-search" onclick="openGoogleSearch(1)">
-                    <i class="bi bi-google"></i>
-                    بحث Google عام
-                </button>
-                <button class="btn-search" onclick="openGoogleSearch(2)">
-                    <i class="bi bi-search"></i>
-                    بحث باستخدام VIN
-                </button>
-                <button class="btn-search" onclick="openGoogleSearch(3)">
-                    <i class="bi bi-chat-dots"></i>
-                    بحث عربي
-                </button>
-                <button class="btn-search" onclick="openGoogleSearch(4)">
-                    <i class="bi bi-image"></i>
-                    بحث صور Google
-                </button>
-                <button class="btn-search" onclick="openGoogleSearch(5)">
-                    <i class="bi bi-bag-check"></i>
+                <div class="search-buttons-grid">
+                    <button class="btn-search-small" onclick="openGoogleSearch(1)">
+                        <i class="bi bi-google"></i>
+                        بحث عام
+                    </button>
+                    <button class="btn-search-small" onclick="openGoogleSearch(2)">
+                        <i class="bi bi-search"></i>
+                        بحث VIN
+                    </button>
+                    <button class="btn-search-small" onclick="openGoogleSearch(3)">
+                        <i class="bi bi-chat-dots"></i>
+                        بحث عربي
+                    </button>
+                    <button class="btn-search-small" onclick="openGoogleSearch(4)">
+                        <i class="bi bi-image"></i>
+                        صور Google
+                    </button>
+                </div>
+
+                <button class="btn-search" onclick="openGoogleSearch(5)" style="margin-top: 10px;">
+                    <i class="bi bi-shopping-bag"></i>
                     بحث شراء أون لاين
+                </button>
+
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #404040;">
+                    <p style="font-size: 12px; color: var(--primary-color); margin-bottom: 10px; font-weight: 600;">
+                        <i class="bi bi-star"></i> مواقع متخصصة في قطع الغيار:
+                    </p>
+                    <div class="search-buttons-grid">
+                        <button class="btn-search-small" onclick="openGoogleSearch(6)">
+                            <i class="bi bi-car-front"></i>
+                            RockAuto
+                        </button>
+                        <button class="btn-search-small" onclick="openGoogleSearch(7)">
+                            <i class="bi bi-gear"></i>
+                            PartsGeek
+                        </button>
+                        <button class="btn-search-small" onclick="openGoogleSearch(8)">
+                            <i class="bi bi-cart"></i>
+                            eBay
+                        </button>
+                        <button class="btn-search-small" onclick="openGoogleSearch(9)">
+                            <i class="bi bi-box"></i>
+                            Amazon
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn-search" onclick="openGoogleSearch(10)" style="margin-top: 10px;">
+                    <i class="bi bi-search"></i>
+                    بحث VIN متقدم
                 </button>
             </div>
 
@@ -503,6 +557,30 @@ header('Content-Type: text/html; charset=utf-8');
     </footer>
 
     <script>
+        // HTML Escape Function
+        function escapeHTML(value) {
+            return String(value ?? '-').replace(/[&<>"']/g, function (char) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[char];
+            });
+        }
+
+        // Clean Value Function
+        function cleanValue(value) {
+            const v = String(value ?? '').trim();
+            return v === '' ? '-' : v;
+        }
+
+        // Valid Term Function
+        function validTerm(value) {
+            return value && value !== '-' && String(value).trim().length > 0;
+        }
+
         // Parts Dictionary with Arabic synonyms
         const PARTS_MAP = [
             { ar:["فحمات اماميه","فحمات أمامية","اقمشة امامية","اقمشة أمامية","قماشات اماميه","قماشات أمامية"], en:"front brake pads" },
@@ -616,7 +694,7 @@ header('Content-Type: text/html; charset=utf-8');
             { ar:["غطاء تانكي","غطاء بنزين"], en:"fuel door" },
             { ar:["رفرف داخلي","بطانة رفرف"], en:"fender liner" },
             { ar:["حامل صدام","دعامة صدام"], en:"bumper reinforcement" },
-            { ar:["شمعة امامية يمين","شمعه اماميه يمين","نور امامي يمين"], en:"right headlight" },
+            { ar:["شمعة ��مامية يمين","شمعه اماميه يمين","نور امامي يمين"], en:"right headlight" },
             { ar:["شمعة امامية يسار","شمعه اماميه يسار","نور امامي يسار"], en:"left headlight" },
             { ar:["اسطب خلفي يمين","اصطب خلفي يمين"], en:"right tail light" },
             { ar:["اسطب خلفي يسار","اصطب خلفي يسار"], en:"left tail light" },
@@ -733,8 +811,10 @@ header('Content-Type: text/html; charset=utf-8');
             }
             
             const cleanedVIN = cleanVIN(vin);
-            if (cleanedVIN.length !== 17) {
-                showAlert('⚠️ رقم VIN يجب أن يكون 17 خانة', 'error');
+            const vinPattern = /^[A-HJ-NPR-Z0-9]{17}$/;
+            
+            if (!vinPattern.test(cleanedVIN)) {
+                showAlert('⚠️ رقم VIN يجب أن يكون 17 خانة بدون I، O، Q', 'error');
                 return false;
             }
             
@@ -748,11 +828,13 @@ header('Content-Type: text/html; charset=utf-8');
             if (!validateVIN(vinInput)) return;
             
             const cleanedVIN = cleanVIN(vinInput);
+            document.getElementById('vinInput').value = cleanedVIN;
+            
             const loader = document.getElementById('vinLoader');
             loader.style.display = 'block';
             
             try {
-                const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${cleanedVIN}?format=json`);
+                const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${encodeURIComponent(cleanedVIN)}?format=json`);
                 const data = await response.json();
                 
                 if (!data.Results || data.Results.length === 0) {
@@ -770,13 +852,13 @@ header('Content-Type: text/html; charset=utf-8');
                 }
                 
                 vehicleData = {
-                    make: result.Make || '-',
-                    model: result.Model || '-',
-                    year: result.ModelYear || '-',
-                    bodyClass: result.BodyClass || '-',
-                    engine: result.EngineModel || '-',
-                    displacement: result.DisplacementL || '-',
-                    country: result.PlantCountry || '-',
+                    make: cleanValue(result.Make),
+                    model: cleanValue(result.Model),
+                    year: cleanValue(result.ModelYear),
+                    bodyClass: cleanValue(result.BodyClass),
+                    engine: cleanValue(result.EngineModel),
+                    displacement: cleanValue(result.DisplacementL),
+                    country: cleanValue(result.PlantCountry),
                     vin: cleanedVIN
                 };
                 
@@ -803,35 +885,35 @@ header('Content-Type: text/html; charset=utf-8');
                 <div class="vehicle-info">
                     <div class="info-row">
                         <span class="info-label">الشركة (Make):</span>
-                        <span class="info-value">${vehicleData.make}</span>
+                        <span class="info-value">${escapeHTML(vehicleData.make)}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">الموديل (Model):</span>
-                        <span class="info-value">${vehicleData.model}</span>
+                        <span class="info-value">${escapeHTML(vehicleData.model)}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">السنة (Year):</span>
-                        <span class="info-value">${vehicleData.year}</span>
+                        <span class="info-value">${escapeHTML(vehicleData.year)}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">نوع الجسم:</span>
-                        <span class="info-value">${vehicleData.bodyClass}</span>
+                        <span class="info-value">${escapeHTML(vehicleData.bodyClass)}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">المحرك:</span>
-                        <span class="info-value">${vehicleData.engine}</span>
+                        <span class="info-value">${escapeHTML(vehicleData.engine)}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">السعة (L):</span>
-                        <span class="info-value">${vehicleData.displacement}</span>
+                        <span class="info-value">${escapeHTML(vehicleData.displacement)}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">بلد التصنيع:</span>
-                        <span class="info-value">${vehicleData.country}</span>
+                        <span class="info-value">${escapeHTML(vehicleData.country)}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">VIN:</span>
-                        <span class="info-value">${vehicleData.vin}</span>
+                        <span class="info-value">${escapeHTML(vehicleData.vin)}</span>
                     </div>
                 </div>
             `;
@@ -869,7 +951,7 @@ header('Content-Type: text/html; charset=utf-8');
                 partEnglish = partArabic;
                 translationAlert.innerHTML = `<div class="alert alert-warning" style="display:block;">ℹ️ لم يتم العثور على ترجمة دقيقة، سيتم البحث بالنص المدخل كما هو.</div>`;
             } else {
-                translationAlert.innerHTML = `<div class="alert alert-success" style="display:block;">✅ تم العثور على المصطلح الإنجليزي: <strong>${partEnglish}</strong></div>`;
+                translationAlert.innerHTML = `<div class="alert alert-success" style="display:block;">✅ تم العثور على المصطلح الإنجليزي: <strong>${escapeHTML(partEnglish)}</strong></div>`;
             }
             
             generateSearchQueries();
@@ -885,13 +967,22 @@ header('Content-Type: text/html; charset=utf-8');
             const vin = vehicleData.vin;
             const partEn = partEnglish;
             const partAr = partArabic;
+
+            // Build clean vehicle base
+            const vehicleBase = [year, make, model].filter(validTerm).join(' ');
+            const engineTerm = validTerm(engine) ? engine : '';
             
             const queries = {
-                query1: `${year} ${make} ${model} ${engine} ${partEn} OEM part number`,
+                query1: engineTerm ? `${vehicleBase} ${engineTerm} ${partEn} OEM part number` : `${vehicleBase} ${partEn} OEM part number`,
                 query2: `${vin} ${partEn} part number`,
                 query3: `${make} ${model} ${year} ${partAr} رقم القطعة`,
-                query4: `${year} ${make} ${model} ${partEn} part number`,
-                query5: `${year} ${make} ${model} ${partEn} buy online`
+                query4: `${vehicleBase} ${partEn} part number`,
+                query5: `${vehicleBase} ${partEn} buy online`,
+                query6: `${vehicleBase} ${partEn} site:rockauto.com`,
+                query7: `${vehicleBase} ${partEn} site:partsgeek.com`,
+                query8: `${vehicleBase} ${partEn} OEM part number site:ebay.com`,
+                query9: `${vehicleBase} ${partEn} part number site:amazon.com`,
+                query10: `${vin} ${partEn} OEM`
             };
             
             displaySearchQueries(queries);
@@ -902,16 +993,26 @@ header('Content-Type: text/html; charset=utf-8');
         function displaySearchQueries(queries) {
             const container = document.getElementById('searchQueriesContainer');
             container.innerHTML = `
-                <div class="search-query"><strong>1.</strong> ${queries.query1}</div>
-                <div class="search-query"><strong>2.</strong> ${queries.query2}</div>
-                <div class="search-query"><strong>3.</strong> ${queries.query3}</div>
-                <div class="search-query"><strong>4.</strong> ${queries.query4}</div>
-                <div class="search-query"><strong>5.</strong> ${queries.query5}</div>
+                <div class="search-query"><strong>1.</strong> ${escapeHTML(queries.query1)}</div>
+                <div class="search-query"><strong>2.</strong> ${escapeHTML(queries.query2)}</div>
+                <div class="search-query"><strong>3.</strong> ${escapeHTML(queries.query3)}</div>
+                <div class="search-query"><strong>4.</strong> ${escapeHTML(queries.query4)}</div>
+                <div class="search-query"><strong>5.</strong> ${escapeHTML(queries.query5)}</div>
+                <div class="search-query"><strong>6.</strong> ${escapeHTML(queries.query6)}</div>
+                <div class="search-query"><strong>7.</strong> ${escapeHTML(queries.query7)}</div>
+                <div class="search-query"><strong>8.</strong> ${escapeHTML(queries.query8)}</div>
+                <div class="search-query"><strong>9.</strong> ${escapeHTML(queries.query9)}</div>
+                <div class="search-query"><strong>10.</strong> ${escapeHTML(queries.query10)}</div>
             `;
         }
 
         // Open Google search
         function openGoogleSearch(queryType) {
+            if (!window.currentQueries) {
+                showAlert('⚠️ جهّز البحث أولاً', 'warning');
+                return;
+            }
+
             const queries = window.currentQueries;
             let query = '';
             
@@ -920,6 +1021,11 @@ header('Content-Type: text/html; charset=utf-8');
             else if (queryType === 3) query = queries.query3;
             else if (queryType === 4) query = queries.query4;
             else if (queryType === 5) query = queries.query5;
+            else if (queryType === 6) query = queries.query6;
+            else if (queryType === 7) query = queries.query7;
+            else if (queryType === 8) query = queries.query8;
+            else if (queryType === 9) query = queries.query9;
+            else if (queryType === 10) query = queries.query10;
             
             let url = '';
             if (queryType === 4) {
@@ -933,8 +1039,13 @@ header('Content-Type: text/html; charset=utf-8');
 
         // Copy search queries
         function copySearchQueries() {
+            if (!window.currentQueries) {
+                showAlert('⚠️ لا توجد عبارات للنسخ', 'warning');
+                return;
+            }
+
             const queries = window.currentQueries;
-            const text = `عبارات البحث المقترحة:\n\n1. ${queries.query1}\n2. ${queries.query2}\n3. ${queries.query3}\n4. ${queries.query4}\n5. ${queries.query5}`;
+            const text = `عبارات البحث المقترحة:\n\n1. ${queries.query1}\n2. ${queries.query2}\n3. ${queries.query3}\n4. ${queries.query4}\n5. ${queries.query5}\n6. ${queries.query6}\n7. ${queries.query7}\n8. ${queries.query8}\n9. ${queries.query9}\n10. ${queries.query10}`;
             
             navigator.clipboard.writeText(text).then(() => {
                 showAlert('✅ تم نسخ عبارات البحث', 'success');
@@ -954,6 +1065,7 @@ header('Content-Type: text/html; charset=utf-8');
             vehicleData = null;
             partEnglish = null;
             partArabic = null;
+            window.currentQueries = null;
             window.scrollTo(0, 0);
         }
 
